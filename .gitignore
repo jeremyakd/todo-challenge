@@ -1,0 +1,25 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django SQLite database
+*.sqlite3
+
+# Virtual environments
+.venv/
+venv/
+
+# Distribution / build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE settings
+.vscode/
+.idea/
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
