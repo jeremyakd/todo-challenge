@@ -1,37 +1,152 @@
-# Invera ToDo-List Challenge (Python/Django Jr-SSr)
+Todo Project API
 
-El propósito de esta prueba es conocer tu capacidad para crear una pequeña aplicación funcional en un límite de tiempo. A continuación, encontrarás las funciones, los requisitos y los puntos clave que debés tener en cuenta durante el desarrollo.
+Proyecto base con Django y Django REST Framework.
+Incluye autenticación por token, CRUD de tareas y documentación Swagger.
+Está preparado para ejecutarse tanto localmente como en contenedores Docker.
 
-## Qué queremos que hagas:
+---
 
-- El Challenge consiste en crear una aplicación web sencilla que permita a los usuarios crear y mantener una lista de tareas.
-- La entrega del resultado será en un nuevo fork de este repo y deberás hacer una pequeña demo del funcionamiento y desarrollo del proyecto ante un super comité de las más grandes mentes maestras de Invera, o a un par de devs, lo que sea más fácil de conseguir.
-- Podes contactarnos en caso que tengas alguna consulta.
+## Requisitos
 
-## Objetivos:
+* Python 3.13
+* Docker y Docker Compose
+* (Opcional) entorno virtual con venv
 
-El usuario de la aplicación tiene que ser capaz de:
+---
 
-- Autenticarse
-- Crear una tarea
-- Eliminar una tarea
-- Marcar tareas como completadas
-- Poder ver una lista de todas las tareas existentes
-- Filtrar/buscar tareas por fecha de creación y/o por el contenido de la misma
+## Instalación local
 
-## Qué evaluamos:
+```
+git clone https://github.com/jeremyakd/todo-project.git
+cd todo-project
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-- Desarrollo utilizando Python, Django. No es necesario crear un Front-End, pero sí es necesario tener una API que permita cumplir con los objetivos de arriba.
-- Uso de librerías y paquetes estandares que reduzcan la cantidad de código propio añadido.
-- Calidad y arquitectura de código. Facilidad de lectura y mantenimiento del código. Estándares seguidos.
-- [Bonus] Manejo de logs.
-- [Bonus] Creación de tests (unitarias y de integración)
-- [Bonus] Unificar la solución propuesta en una imagen de Docker por repositorio para poder ser ejecutada en cualquier ambiente (si aplica para full stack).
+Crear el archivo `.env` dentro de `todo_project/` con lo mínimo:
 
-## Requerimientos de entrega:
+```
+DJANGO_SECRET_KEY=alguna_clave_segura
+DEBUG=True
+ALLOWED_HOSTS=*
+```
 
-- Hacer un fork del proyecto y pushearlo en github. Puede ser privado.
-- La solución debe correr correctamente.
-- El Readme debe contener todas las instrucciones para poder levantar la aplicación, en caso de ser necesario, y explicar cómo se usa.
-- Disponibilidad para realizar una pequeña demo del proyecto al finalizar el challenge.
-- Tiempo para la entrega: Aproximadamente 7 días.
+Luego aplicar migraciones y levantar el servidor:
+
+```
+python todo_project/manage.py migrate
+python todo_project/manage.py runserver
+```
+
+La API queda disponible en [http://localhost:8000](http://localhost:8000).
+
+---
+
+## Endpoints principales
+
+| Método | Ruta                | Descripción                   | Auth |
+| :----- | :------------------ | :---------------------------- | :--- |
+| POST   | /api/auth/register/ | Crear usuario nuevo           | No   |
+| POST   | /api/auth/login/    | Obtener token                 | No   |
+| POST   | /api/auth/logout/   | Cerrar sesión (elimina token) | Sí   |
+| GET    | /api/tasks/         | Listar tareas del usuario     | Sí   |
+| POST   | /api/tasks/         | Crear tarea                   | Sí   |
+| GET    | /api/tasks/{id}/    | Ver detalle                   | Sí   |
+| PUT    | /api/tasks/{id}/    | Actualizar completa           | Sí   |
+| PATCH  | /api/tasks/{id}/    | Actualizar parcial            | Sí   |
+| DELETE | /api/tasks/{id}/    | Eliminar                      | Sí   |
+
+Swagger: [http://localhost:8000/swagger/](http://localhost:8000/swagger/)
+Redoc: [http://localhost:8000/redoc/](http://localhost:8000/redoc/)
+
+---
+
+## Tests
+
+Los tests usan pytest y factory_boy.
+
+```
+pytest --cov=tasks --cov-report=term-missing
+```
+
+El proyecto llega al 100 % de cobertura.
+
+---
+
+## Docker
+
+### Construir y ejecutar localmente
+
+```
+docker compose up --build
+```
+
+### Usar la imagen publicada
+
+```
+docker compose -f docker-compose.image.yml up -d
+```
+
+El servicio se expone en el puerto 8000.
+
+---
+
+## CI/CD
+
+Hay un workflow configurado para GitHub Actions que:
+
+1. Ejecuta los tests.
+2. Construye la imagen Docker.
+3. La publica en Docker Hub con la etiqueta `latest`.
+
+Variables requeridas en los Secrets del repositorio:
+
+```
+DOCKERHUB_USERNAME
+DOCKERHUB_TOKEN
+DJANGO_SECRET_KEY
+DEBUG
+ALLOWED_HOSTS
+```
+
+---
+
+## Estructura del proyecto
+
+```
+todo_project/
+├── tasks/
+│   ├── auth_views.py
+│   ├── task_views.py
+│   ├── serializers.py
+│   ├── constants.py
+│   ├── docs/
+│   └── urls.py
+│
+├── tests/
+│   ├── factories/
+│   ├── integrations/
+│   └── conftest.py
+│
+├── todo_project/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── Dockerfile
+├── docker-compose.yml
+├── docker-compose.image.yml
+└── requirements.txt
+```
+
+---
+
+## Notas
+
+* TokenAuthentication global con IsAuthenticated por defecto.
+* Swagger es público (AllowAny).
+* TaskViewSet filtra por request.user.
+* Archivos estáticos servidos con whitenoise.
+* DEBUG se maneja como texto ("True" / "False").
+* No hay dependencias de base de datos externas; usa SQLite.
