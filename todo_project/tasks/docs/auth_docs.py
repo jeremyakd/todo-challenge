@@ -5,7 +5,6 @@ from ..constants import (
     AUTH_ERROR_INVALID_CREDENTIALS,
     AUTH_ERROR_INVALID_OR_MISSING_TOKEN,
     AUTH_ERROR_MISSING_CREDENTIALS,
-    AUTH_ERROR_USER_EXISTS,
     JSON_KEY_DETAIL,
     JSON_KEY_TOKEN,
     SWAGGER_DESC_LOGIN,
@@ -58,10 +57,7 @@ register_schema = swagger_auto_schema(
         400: openapi.Response(
             description=SWAGGER_RESPONSE_REGISTER_INVALID,
             examples={
-                "application/json": [
-                    {JSON_KEY_DETAIL: AUTH_ERROR_MISSING_CREDENTIALS},
-                    {JSON_KEY_DETAIL: AUTH_ERROR_USER_EXISTS},
-                ]
+                "application/json": {JSON_KEY_DETAIL: AUTH_ERROR_MISSING_CREDENTIALS}
             },
         ),
     },
@@ -123,7 +119,7 @@ logout_schema = swagger_auto_schema(
     responses={
         204: openapi.Response(
             description=SWAGGER_RESPONSE_LOGOUT_SUCCESS,
-            examples={"application/json": None},
+            examples={"application/json": {}},
         ),
         401: openapi.Response(
             description=SWAGGER_RESPONSE_LOGOUT_UNAUTHORIZED,
