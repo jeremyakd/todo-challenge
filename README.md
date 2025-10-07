@@ -31,6 +31,7 @@ DJANGO_SECRET_KEY=alguna_clave_segura
 DEBUG=True
 ALLOWED_HOSTS=*
 ```
+Si no tienens clave segura puedes obtener una de aqui => https://djecrety.ir/
 
 Luego aplicar migraciones y levantar el servidor:
 
