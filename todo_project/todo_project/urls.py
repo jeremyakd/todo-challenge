@@ -8,9 +8,12 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Todo API",
         default_version="v1",
+        description="API documentation for the Todo project.",
+        contact=openapi.Contact(email="support@example.com"),
+        license=openapi.License(name="MIT License"),
     ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
+    public=True,  # allow public access to docs, only for demo
+    permission_classes=[permissions.AllowAny],  # no auth required to view docs for demo
 )
 
 urlpatterns = [
