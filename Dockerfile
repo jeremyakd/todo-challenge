@@ -1,5 +1,9 @@
 FROM python:3.13-slim
 
+LABEL maintainer="Jeremías jeremyakd@gmail.com" \
+      version="1.0" \
+      description="Todo Project API - Django + DRF"
+
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -17,6 +21,15 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 WORKDIR /app/todo_project
+
+ARG DJANGO_SECRET_KEY
+ARG DEBUG
+ARG ALLOWED_HOSTS
+
+ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+ENV DEBUG=$DEBUG
+ENV ALLOWED_HOSTS=$ALLOWED_HOSTS
+
 
 RUN python manage.py collectstatic --noinput
 
